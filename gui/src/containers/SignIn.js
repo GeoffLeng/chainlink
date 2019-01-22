@@ -3,20 +3,34 @@ import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import { Grid } from '@material-ui/core'
-import { submitSignIn } from 'actions'
-import Title from 'components/Title'
-import matchRouteAndMapDispatchToProps from 'utils/matchRouteAndMapDispatchToProps'
 import { useHooks, useState } from 'use-react-hooks'
+import { hot } from 'react-hot-loader'
+import { submitSignIn } from 'actions'
+import HexagonLogo from 'components/HexagonLogo'
+import matchRouteAndMapDispatchToProps from 'utils/matchRouteAndMapDispatchToProps'
 
 const styles = theme => ({
-  button: {
-    margin: theme.spacing.unit * 5
+  container: {
+    height: '100%'
   },
-  title: {
-    marginTop: theme.spacing.unit * 5
+  cardContent: {
+    paddingTop: theme.spacing.unit * 6,
+    paddingLeft: theme.spacing.unit * 4,
+    paddingRight: theme.spacing.unit * 4,
+    '&:last-child': {
+      paddingBottom: theme.spacing.unit * 6
+    }
+  },
+  headerRow: {
+    textAlign: 'center'
+  },
+  button: {
+    // margin: theme.spacing.unit * 5
   }
 })
 
@@ -32,50 +46,79 @@ export const SignIn = useHooks((props) => {
     props.submitSignIn({ email, password })
   }
   const { classes, fetching, authenticated } = props
-  const enabled = email.length > 0 && password.length > 0
 
   if (authenticated) return <Redirect to='/' />
   return (
-    <form noValidate onSubmit={onSubmit}>
-      <Grid container alignItems='center' direction='column'>
-        <Title className={classes.title}>Sign In to Chainlink</Title>
-        <TextField
-          id='email'
-          label='Email'
-          className={classes.textField}
-          margin='normal'
-          value={email}
-          onChange={handleChange('email')}
-        />
-        <TextField
-          id='password'
-          label='Password'
-          className={classes.textField}
-          type='password'
-          autoComplete='password'
-          margin='normal'
-          value={password}
-          onChange={handleChange('password')}
-        />
-        <Button
-          type='submit'
-          disabled={!enabled}
-          variant='contained'
-          color='primary'
-          className={classes.button}
-        >
-            Sign In
-        </Button>
-        {fetching && (
-          <Typography variant='body1' color='textSecondary'>
-              Signing in...
-          </Typography>
-        )}
+    <Grid container justify='center' alignItems='center' className={classes.container} spacing={0}>
+      <Grid item xs={4}>
+        <Card>
+          <CardContent className={classes.cardContent}>
+            <form noValidate onSubmit={onSubmit}>
+              <Grid container spacing={8}>
+                <Grid item xs={12}>
+                  <Grid container spacing={0}>
+                    <Grid item xs={12} className={classes.headerRow}>
+                      <HexagonLogo width={50} />
+                    </Grid>
+                    <Grid item xs={12} className={classes.headerRow}>
+                      <Typography variant='h5'>
+                        Operator
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <TextField
+                    id='email'
+                    label='Email'
+                    margin='normal'
+                    value={email}
+                    onChange={handleChange('email')}
+                    variant='outlined'
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    id='password'
+                    label='Password'
+                    type='password'
+                    autoComplete='password'
+                    margin='normal'
+                    value={password}
+                    onChange={handleChange('password')}
+                    variant='outlined'
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Grid container spacing={0} justify='center'>
+                    <Grid item>
+                      <Button
+                        type='submit'
+                        variant='contained'
+                        color='primary'
+                        className={classes.button}
+                      >
+                        Access Account
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                {fetching && (
+                  <Typography variant='body1' color='textSecondary'>
+                    Signing in...
+                  </Typography>
+                )}
+              </Grid>
+            </form>
+          </CardContent>
+        </Card>
       </Grid>
-    </form>
+    </Grid>
   )
-}
-)
+})
 
 const mapStateToProps = state => ({
   fetching: state.authentication.fetching,
@@ -87,4 +130,4 @@ export const ConnectedSignIn = connect(
   matchRouteAndMapDispatchToProps({ submitSignIn })
 )(SignIn)
 
-export default withStyles(styles)(ConnectedSignIn)
+export default hot(module)(withStyles(styles)(ConnectedSignIn))
